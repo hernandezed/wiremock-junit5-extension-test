@@ -18,7 +18,8 @@ import java.util.function.Function;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-public class ServerMockSetupExtension implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, AfterEachCallback {
+public class ServerMockSetupExtension
+        implements BeforeEachCallback, AfterAllCallback, BeforeAllCallback, AfterEachCallback {
     private ObjectMapper objectMapper;
     private WireMockServer wireMockServer = new WireMockServer(9090);
     private List<StubMapping> testInstanceIds = new ArrayList<>();
@@ -29,7 +30,8 @@ public class ServerMockSetupExtension implements BeforeEachCallback, AfterAllCal
     }
 
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
-        ServerMockSetup[] serverMockSetups = extensionContext.getElement().get().getDeclaredAnnotationsByType(ServerMockSetup.class);
+        ServerMockSetup[] serverMockSetups = extensionContext.getElement().get()
+                .getDeclaredAnnotationsByType(ServerMockSetup.class);
         for (ServerMockSetup serverMockSetup : serverMockSetups) {
             testInstanceIds.addAll(createStubs(extensionContext, serverMockSetup.stubs()));
         }
@@ -38,12 +40,16 @@ public class ServerMockSetupExtension implements BeforeEachCallback, AfterAllCal
     private List<StubMapping> createStubs(ExtensionContext extensionContext, String[] stubs) throws IOException {
         List<StubMapping> testInstanceIds = new ArrayList<>();
         for (String stubFileName : stubs) {
-            File stub = new File(Objects.requireNonNull(extensionContext.getRequiredTestClass().getClassLoader().getResource(stubFileName)).getFile());
-            byte[] stubAsBytes = Files.readAllBytes(stub.toPath());
+            byte[] stubAsBytes = readFile(extensionContext, stubFileName);
             MockSetup mockSetup = objectMapper.readValue(stubAsBytes, MockSetup.class);
             UrlPattern urlMatcher = urlEqualTo(mockSetup.path);
             MappingBuilder mappingBuilder = getHttpMethodFunction(mockSetup.getMethod()).apply(urlMatcher);
-            ResponseDefinitionBuilder mockResp = WireMock.aResponse().withBody(mockSetup.getBody().toString())
+
+            String body = getBody(extensionContext, mockSetup);
+
+            ResponseDefinitionBuilder mockResp = WireMock.
+                    aResponse()
+                    .withBody(body)
                     .withStatus(mockSetup.getResponseCode());
             StubMapping stubMapping = wireMockServer.stubFor(mappingBuilder.willReturn(mockResp));
             testInstanceIds.add(stubMapping);
@@ -51,24 +57,37 @@ public class ServerMockSetupExtension implements BeforeEachCallback, AfterAllCal
         return testInstanceIds;
     }
 
+    private byte[] readFile(ExtensionContext extensionContext, String filename) throws IOException {
+        File stub = new File(Objects.requireNonNull(
+                extensionContext.getRequiredTestClass().getClassLoader().getResource(filename)).getFile());
+        return Files.readAllBytes(stub.toPath());
+    }
+
+    private String getBody(ExtensionContext extensionContext, MockSetup mockSetup) throws IOException {
+        if (Objects.nonNull(mockSetup.getBody())) {
+            return mockSetup.getBody().toString();
+        }
+        return new String(readFile(extensionContext, mockSetup.getBodyPath()));
+    }
+
     private Function<UrlPattern, MappingBuilder> getHttpMethodFunction(String httpMethod) {
         switch (httpMethod) {
-            case "GET":
-                return WireMock::get;
-            case "POST":
-                return WireMock::post;
-            case "PATCH":
-                return WireMock::patch;
-            case "PUT":
-                return WireMock::put;
-            case "DELETE":
-                return WireMock::delete;
-            case "HEAD":
-                return WireMock::head;
-            case "OPTIONS":
-                return WireMock::options;
-            default:
-                return WireMock::any;
+        case "GET":
+            return WireMock::get;
+        case "POST":
+            return WireMock::post;
+        case "PATCH":
+            return WireMock::patch;
+        case "PUT":
+            return WireMock::put;
+        case "DELETE":
+            return WireMock::delete;
+        case "HEAD":
+            return WireMock::head;
+        case "OPTIONS":
+            return WireMock::options;
+        default:
+            return WireMock::any;
         }
     }
 
