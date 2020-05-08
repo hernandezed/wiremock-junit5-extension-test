@@ -4,6 +4,7 @@ public class MockSetup {
 
     String path;
     JsonNode body;
+    String bodyPath;
     String method;
     int responseCode;
 
@@ -39,13 +40,22 @@ public class MockSetup {
         this.responseCode = responseCode;
     }
 
+    public String getBodyPath() {
+        return bodyPath;
+    }
+
+    public void setBodyPath(String bodyPath) {
+        this.bodyPath = bodyPath;
+    }
+
     @Override
     public String toString() {
         return "MockSetup{" +
                 "path='" + path + '\'' +
-                ", body='" + body + '\'' +
+                ", body=" + body +
+                ", bodyPath='" + bodyPath + '\'' +
                 ", method='" + method + '\'' +
-                ", responseCode='" + responseCode + '\'' +
+                ", responseCode=" + responseCode +
                 '}';
     }
 }
