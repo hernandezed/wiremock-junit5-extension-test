@@ -1,0 +1,12 @@
+{
+  "path": "/test2",
+  "body": {
+    "asdadsd": "qweqweqwe",
+    "qweqweqwe": [1,2,3,4,5],
+    "kmlkm": {
+      "asdasd": 423
+    }
+  },
+  "method": "GET",
+  "responseCode": "200"
+}
