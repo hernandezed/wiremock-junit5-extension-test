@@ -1,3 +1,4 @@
+import com.almundo.wiremock.ServerMockSetup;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -97,10 +98,10 @@ public class ServerMockSetupExtension
     }
 
     @Override
-    public void beforeAll(ExtensionContext extensionContext) throws Exception {
-        DefaultServerMockSetup defaultServerMockSetup = extensionContext.getRequiredTestClass().getDeclaredAnnotationsByType(DefaultServerMockSetup.class)[0];
-        createStubs(extensionContext, defaultServerMockSetup.stubs());
-        wireMockServer.start();
+        public void beforeAll(ExtensionContext extensionContext) throws Exception {
+            DefaultServerMockSetup defaultServerMockSetup = extensionContext.getRequiredTestClass().getDeclaredAnnotationsByType(DefaultServerMockSetup.class)[0];
+            createStubs(extensionContext, defaultServerMockSetup.stubs());
+            wireMockServer.start();
 
     }
 

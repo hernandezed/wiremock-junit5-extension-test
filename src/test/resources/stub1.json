@@ -1,12 +1,17 @@
 {
   "path": "/test",
-  "body": {
-    "asdadsd": "qweqweqwe",
-    "qweqweqwe": [1,2,3,4,56],
-    "kmlkm": {
-      "asdasd": 423
-    }
+  "headers": {
+    "asdasdas": "adasd",
+    "werwerw": "asdasds"
   },
   "method": "GET",
   "responseCode": "200"
+}
+========
+ {
+"asdadsd": "qweqweqwe",
+"qweqweqwe": [1,2,3,4,56],
+"kmlkm": {
+"asdasd": 423
+}
 }

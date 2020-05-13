@@ -1,3 +1,4 @@
+import com.almundo.wiremock.ServerMockSetup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -9,6 +10,7 @@ import java.net.http.HttpResponse;
 
 
 @ExtendWith(ServerMockSetupExtension.class)
+@DefaultServerMockSetup(stubs = "stub3.json")
 public class PruebaTest {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
