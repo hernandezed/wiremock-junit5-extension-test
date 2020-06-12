@@ -15,7 +15,7 @@ import java.util.Optional;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -185,33 +185,6 @@ class WireMockServerSetupExtensionTest {
         assertThat(afterStubMappings).isNotEqualTo(beforeStubMappings).hasSize(beforeStubMappings.size() + 2);
     }
 
-    @Test
-    void beforeEach_withTestWithMultipleServerMockSetup_addStubs() {
-        AnnotatedElement annotatedElement = mock(AnnotatedElement.class);
-        ServerMockSetup serverMockSetup1 = mock(ServerMockSetup.class);
-        ServerMockSetup serverMockSetup2 = mock(ServerMockSetup.class);
-
-        when(serverMockSetup1.stubs()).thenReturn(new String[]{"test_files/GetSomeThing.json"});
-        when(serverMockSetup2.stubs()).thenReturn(new String[]{"test_files/GetSomeThing2.json"});
-        when(annotatedElement.getDeclaredAnnotationsByType(any())).thenReturn(new ServerMockSetup[]{
-                serverMockSetup1,
-                serverMockSetup2
-        });
-        ExtensionContext extensionContext = mock(ExtensionContext.class);
-        when(extensionContext.getElement()).thenReturn(Optional.of(annotatedElement));
-        Mockito.doReturn(BeforeAllWithOneServerStubAnnotationWithOneStubAddOneStubMapping.class).when(extensionContext).getRequiredTestClass();
-
-        WireMockServer wireMockServer = WireMockServerSingleton.getInstance();
-
-        List<StubMapping> beforeStubMappings = wireMockServer.getStubMappings();
-
-        wireMockServerSetupExtension.beforeEach(extensionContext);
-
-        List<StubMapping> afterStubMappings = wireMockServer.getStubMappings();
-
-        assertThat(afterStubMappings).isNotEqualTo(beforeStubMappings).hasSize(beforeStubMappings.size() + 2);
-    }
-
     class BeforeAllWithoutAnnotationsDoNothing {
     }
 
@@ -228,7 +201,7 @@ class WireMockServerSetupExtensionTest {
 
     @ServerMockSetup(stubs = "test_files/GetSomeThing.json")
     class BeforeAllWithStubMappingWithInheritingFromClassWithStubMappingAddStubMapping extends BeforeAllWithOneServerStubAnnotationWithTwoStubsAddTwoStubMapping {
-
     }
+
 }
 
